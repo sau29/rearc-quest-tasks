@@ -4,7 +4,7 @@ Networking Component:
 1. It deploys VPC, 2 Public Subnets, Internet Gateways, Route Table
 2. Security Groups for Application Load Balancer and Server Instances
 
-# Computing Compnent:
+# Computing Component:
 1. It creates Application Load Balancer
 2. Listener, listening on port 80 for HTTP traffic
 3. Target group, connected to Server Instance
@@ -16,7 +16,7 @@ Networking Component:
 1. It deploys VPC, 2 Public Subnets, Internet Gateways, Route Table
 2. Security Groups for Application Load Balancer and Server Instances
 
-# Computing and Container Compnent:
+# Computing and Container Component:
 1. It creates Application Load Balancer
 2. Listener, listening on port 80 for HTTP traffic
 3. Target group, connected to Server Instance
