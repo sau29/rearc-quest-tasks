@@ -1,0 +1,49 @@
+# # Configure Security Group for Server
+# # TODO: Need to update to get/send traffic from/to ALB's SG
+resource "aws_security_group" "rearc-quest-tasks-trfm-sg-ecs" {
+  ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "SG Rule for SSH Traffic"
+    from_port   = 22
+    protocol    = "tcp"
+    to_port     = 22
+  }
+  ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "SG Rule for HTTP Traffic"
+    from_port   = 80
+    protocol    = "tcp"
+    to_port     = 80
+  }
+  ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "SG Rule for HTTPs Traffic"
+    from_port   = 443
+    protocol    = "tcp"
+    to_port     = 443
+  }
+  ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "SG Rule - Wild entry"
+    from_port   = 0
+    protocol    = "-1"
+    to_port     = 0
+  }
+
+  egress {
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Egress SG Rule allowing all traffic"
+    from_port   = 0
+    protocol    = "-1"
+    to_port     = 0
+  }
+
+  name        = "rearc-quest-tasks-trfm-sg-ecs"
+  description = "SG for ECS Container"
+  vpc_id      = aws_vpc.rearc-quest-tasks-trfm-vpc.id
+
+  tags = {
+    "Name"      = "rearc-quest-tasks-trfm-sg-ecs"
+    "BelongsTo" = "rearc-quest-tasks-trfm"
+  }
+}

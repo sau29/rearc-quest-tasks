@@ -1,0 +1,49 @@
+/*
+MOCK CODE: Just for testing and to be removed....
+
+1. Earlier have seen that instance launched through ASG fails to be part of container
+2. AWS managed policy needs to add manually in instance profile
+3. Instance launched through console gets added to cluster and could access index page.
+4. Instance launched throgh this template also fails to launch container.
+*/
+
+#EC2 Instance - launch single instance. target group code needs to update accordingly
+# this code is not required actually - delete it,
+resource "aws_instance" "rearc-quest-tasks-trfm-instance" {
+  depends_on = [
+    aws_security_group.rearc-quest-tasks-trfm-sg-ecs,
+    aws_subnet.rearc-quest-tasks-trfm-subnet1-pub
+  ]
+
+  ami                         = "ami-0a58b4e1d21144502"
+  instance_type               = "t2.micro"
+  associate_public_ip_address = true
+  iam_instance_profile        = aws_iam_instance_profile.rearc-quest-tasks-trfm-tdef-instprfl.name
+  security_groups             = [aws_security_group.rearc-quest-tasks-trfm-sg-ecs.id]
+  subnet_id                   = aws_subnet.rearc-quest-tasks-trfm-subnet1-pub.id
+  tags = {
+    "Name"      = "rearc-quest-tasks-trfm-instance"
+    "BelongsTo" = "rearc-quest-tasks-trfm"
+  }
+  user_data = <<EOF
+    #!/bin/bash 
+    echo "ECS_CLUSTER=rearc-quest-tasks-trfm-cluster" > /etc/ecs/ecs.config
+    # sudo yum update -y
+    # sudo yum install -y httpd
+    # sudo systemctl enable httpd
+    # sudo service httpd start  
+    # echo "<h1>Welcome !! AWS Infra created using Terraform in us-east-1 Region</h1>" | sudo tee /var/www/html/index.html      
+    EOF
+}
+
+resource "aws_lb_target_group_attachment" "rearc-quest-tasks-trfm-targetgroup-atchmt" {
+  depends_on = [
+    aws_lb_target_group.rearc-quest-tasks-trfm-ecs-targetgroup
+  ]
+
+  target_group_arn = aws_lb_target_group.rearc-quest-tasks-trfm-ecs-targetgroup.arn
+  #TODO: If registered instance gets terminated, will they get update again here, when we launch through TRFM?
+  #target_id is mandatory parameter, as against configuring through console - JFI
+  target_id = aws_instance.rearc-quest-tasks-trfm-instance.id
+  port      = 80
+}
